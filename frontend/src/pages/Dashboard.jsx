@@ -7,7 +7,6 @@ import {
   Droplets,
   Timer,
   Target,
-  Plus,
   Flame,
   ArrowRight,
   Smile,
@@ -23,7 +22,6 @@ import ActivityChart from "../components/dashboard/ActivityChart";
 import GoalProgress from "../components/dashboard/GoalProgress";
 import RecentActivities from "../components/dashboard/RecentActivities";
 import StreakCard from "../components/dashboard/StreakCard";
-import ActivityFormModal from "../components/activities/ActivityFormModal";
 import { ProgressBar } from "../components/common/Badge";
 
 import { useApp } from "../context/AppContext";
@@ -49,7 +47,6 @@ function Dashboard() {
   const { user } = useAuth();
   const { activities, goals } = useApp();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [streak, setStreak] = useState({ current: 0, longest: 0 });
   const [chartData, setChartData] = useState([]);
   const [todayMood, setTodayMood] = useState(null);
@@ -139,54 +136,20 @@ function Dashboard() {
           background: "linear-gradient(135deg, #173F32 0%, #0F2D24 100%)",
           color: "#ffffff",
           padding: "var(--dm-space-8) var(--dm-space-10)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "var(--dm-space-6)",
           boxShadow: "0 12px 32px rgba(23, 63, 50, 0.15)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
         }}
       >
-        <div style={{ maxWidth: "600px" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(220, 233, 225, 0.18)", color: "#DCE9E1", padding: "4px 12px", borderRadius: "9999px", fontSize: "12px", fontWeight: "600", marginBottom: "12px" }}>
-            <Sparkles size={14} />
-            <span>Student Wellness Ecosystem</span>
-          </div>
-          <h1 style={{ fontSize: "var(--dm-text-2xl)", fontWeight: "700", color: "#ffffff", letterSpacing: "-0.03em", lineHeight: "1.2", marginBottom: "8px" }}>
-            {getGreeting()}, {firstName}
-          </h1>
-          <p style={{ fontSize: "var(--dm-text-sm)", color: "rgba(244, 243, 232, 0.82)", lineHeight: "1.6" }}>
-            You've logged <strong>{formatHoursMinutes(dashboardStats.totalProductiveMinutes)}</strong> of focus and balance this week. Keep up the steady momentum.
-          </p>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(220, 233, 225, 0.18)", color: "#DCE9E1", padding: "4px 12px", borderRadius: "9999px", fontSize: "12px", fontWeight: "600", marginBottom: "12px" }}>
+          <Sparkles size={14} />
+          <span>Student Wellness Ecosystem</span>
         </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--dm-space-3)" }}>
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 20px",
-              borderRadius: "12px",
-              backgroundColor: "#DCE9E1",
-              color: "#173F32",
-              fontSize: "14px",
-              fontWeight: "600",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
-              transition: "transform 150ms ease, background-color 150ms ease",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#DCE9E1")}
-          >
-            <Plus size={16} />
-            <span>Log Activity</span>
-          </button>
-        </div>
+        <h1 style={{ fontSize: "var(--dm-text-2xl)", fontWeight: "700", color: "#ffffff", letterSpacing: "-0.03em", lineHeight: "1.2", marginBottom: "8px" }}>
+          {getGreeting()}, {firstName}
+        </h1>
+        <p style={{ fontSize: "var(--dm-text-sm)", color: "rgba(244, 243, 232, 0.82)", lineHeight: "1.6" }}>
+          You've logged <strong>{formatHoursMinutes(dashboardStats.totalProductiveMinutes)}</strong> of focus and balance this week. Keep up the steady momentum.
+        </p>
       </div>
 
       {/* ASYMMETRIC METRIC SECTION: Featured Highlight Card + Compact Cards */}
@@ -262,19 +225,19 @@ function Dashboard() {
 
           <StatCard
             title="Sleep Record"
-            value={sleepRecord ? `${sleepRecord.duration || 8}h` : "7.5h"}
-            subtitle={sleepRecord?.quality ? `Quality: ${sleepRecord.quality}` : "Nightly target 8.0h"}
+            value={sleepRecord ? `${sleepRecord.duration}h` : "—"}
+            subtitle={sleepRecord?.quality ? `Quality: ${sleepRecord.quality}` : "No sleep record today"}
             icon={Moon}
             variant="warning"
           />
 
           <StatCard
             title="Hydration Status"
-            value={hydration ? `${hydration.total}L` : "1.6L"}
-            subtitle={hydration ? `Goal: ${hydration.target}L` : "Goal: 2.0L"}
+            value={hydration ? `${hydration.total}L` : "0L"}
+            subtitle={hydration ? `Goal: ${hydration.target}L` : "Goal: 2L"}
             icon={Droplets}
             variant="info"
-            progress={hydration ? Math.min(100, (hydration.total / hydration.target) * 100) : 80}
+            progress={hydration ? Math.min(100, (hydration.total / hydration.target) * 100) : 0}
           />
         </div>
       </div>
@@ -344,9 +307,9 @@ function Dashboard() {
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <Droplets size={14} style={{ color: "var(--dm-info)" }} /> Hydration (2.0L Target)
               </span>
-              <span>{hydration ? Math.round((hydration.total / hydration.target) * 100) : 80}%</span>
+              <span>{hydration ? Math.round((hydration.total / hydration.target) * 100) : 0}%</span>
             </div>
-            <ProgressBar value={hydration ? hydration.total : 1.6} max={hydration ? hydration.target : 2} variant="info" />
+            <ProgressBar value={hydration ? hydration.total : 0} max={hydration ? hydration.target : 2} variant="info" />
           </div>
 
           <div>
@@ -364,9 +327,9 @@ function Dashboard() {
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <Moon size={14} style={{ color: "var(--dm-warning)" }} /> Sleep Goal (8.0h Target)
               </span>
-              <span>{sleepRecord ? Math.round((sleepRecord.duration / 8) * 100) : 93}%</span>
+              <span>{sleepRecord ? Math.min(100, Math.round((sleepRecord.duration / 8) * 100)) : 0}%</span>
             </div>
-            <ProgressBar value={sleepRecord ? sleepRecord.duration : 7.5} max={8} variant="warning" />
+            <ProgressBar value={sleepRecord ? sleepRecord.duration : 0} max={8} variant="warning" />
           </div>
         </div>
       </div>
@@ -410,11 +373,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Global Activity Creator Modal */}
-      <ActivityFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+
     </div>
   );
 }

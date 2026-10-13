@@ -59,14 +59,16 @@ export function ActivityFormModal({ isOpen, onClose, initialData = null }) {
     setError("");
 
     try {
+      const tagString = formData.tags ? formData.tags.split(",").map((t) => t.trim()).filter(Boolean).join(", ") : "";
+      const noteText = [formData.notes.trim(), tagString ? `Tags: ${tagString}` : ""].filter(Boolean).join(" | ");
+
       const payload = {
         title: formData.title.trim(),
         category: formData.category,
         date: formData.date,
         startTime: formData.startTime,
         duration: Number(formData.duration) || 0,
-        notes: formData.notes.trim(),
-        tags: formData.tags ? formData.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+        note: noteText || null,
       };
 
       if (initialData?.id) {

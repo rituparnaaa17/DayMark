@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  BarChart3,
   Activity,
   Target,
   Clock3,
@@ -21,7 +20,7 @@ import { useApp } from "../context/AppContext";
 import analyticsService from "../services/analyticsService";
 
 function Analytics() {
-  const { activities, goals } = useApp();
+  const { goals } = useApp();
 
   const [dateRange, setDateRange] = useState("7d");
   const [loading, setLoading] = useState(true);
@@ -43,7 +42,11 @@ function Analytics() {
 
         if (isMounted) {
           const formattedTrend = (trendRes || []).map((t) => ({
-            date: new Date(t.date).toLocaleDateString(undefined, { weekday: "short", month: "numeric", day: "numeric" }),
+            date: new Date(t.date).toLocaleDateString(undefined, {
+              weekday: "short",
+              month: "numeric",
+              day: "numeric",
+            }),
             value: t.count,
           }));
           setTrendData(formattedTrend);
@@ -51,6 +54,7 @@ function Analytics() {
           const formattedCategories = (categoryRes || []).map((c) => ({
             name: c.category.charAt(0) + c.category.slice(1).toLowerCase(),
             value: c.count,
+            totalDuration: c.totalDuration || 0,
           }));
           setCategoryData(formattedCategories);
 
@@ -59,25 +63,18 @@ function Analytics() {
       } catch (error) {
         console.error("Error fetching analytics:", error);
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     }
 
     fetchAnalytics();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [dateRange]);
 
+  // Stats computed from real API range-specific data
   const stats = useMemo(() => {
-    const totalActivities = activities.length;
-    const activeTime = activities.reduce(
-      (total, a) => total + (Number(a.duration) || 0),
-      0
-    );
+    const totalActivities = trendData.reduce((sum, d) => sum + (d.value || 0), 0);
+    const activeTimeMinutes = categoryData.reduce((sum, c) => sum + (c.totalDuration || 0), 0);
 
     const goalProgress =
       goals.length > 0
@@ -90,16 +87,19 @@ function Analytics() {
           )
         : 0;
 
-    return { totalActivities, activeTime, goalProgress };
-  }, [activities, goals]);
+    return { totalActivities, activeTimeMinutes, goalProgress };
+  }, [trendData, categoryData, goals]);
 
   const formattedActiveTime =
-    stats.activeTime >= 60
-      ? `${Math.floor(stats.activeTime / 60)}h ${stats.activeTime % 60}m`
-      : `${stats.activeTime}m`;
+    stats.activeTimeMinutes >= 60
+      ? `${Math.floor(stats.activeTimeMinutes / 60)}h ${stats.activeTimeMinutes % 60}m`
+      : `${stats.activeTimeMinutes}m`;
 
   return (
-    <div className="dm-animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "var(--dm-space-6)" }}>
+    <div
+      className="dm-animate-fade-in"
+      style={{ display: "flex", flexDirection: "column", gap: "var(--dm-space-6)" }}
+    >
       {/* Page Header & Range Switcher */}
       <PageHeader
         title="Analytics"
@@ -117,18 +117,18 @@ function Analytics() {
         }
       />
 
-      {/* Top Metric Cards */}
+      {/* Metric Cards — always shows real data from API */}
       <div className="dm-grid-4">
         <StatCard
           title="Total Activities"
-          value={stats.totalActivities}
+          value={loading ? "—" : stats.totalActivities}
           subtitle={`Last ${dateRange}`}
           icon={Activity}
           variant="primary"
         />
         <StatCard
           title="Logged Time"
-          value={formattedActiveTime}
+          value={loading ? "—" : formattedActiveTime}
           subtitle="Active effort tracked"
           icon={Clock3}
           variant="info"
@@ -150,25 +150,41 @@ function Analytics() {
         />
       </div>
 
-      {/* Visual Chart Hierarchy */}
+      {/* Charts — always shown; individual components render "no data" messages when empty */}
       {loading ? (
-        <div className="dm-card" style={{ padding: "var(--dm-space-10)", textAlign: "center", color: "var(--dm-text-muted)" }}>
-          Loading analytical charts...
+        <div
+          className="dm-card"
+          style={{
+            padding: "var(--dm-space-10)",
+            textAlign: "center",
+            color: "var(--dm-text-muted)",
+          }}
+        >
+          Loading analytics...
         </div>
-      ) : activities.length === 0 && goals.length === 0 ? (
-        <EmptyState
-          icon={BarChart3}
-          title="No analytics data available"
-          message="Log daily activities or create goals to view analytical trends over time."
-        />
       ) : (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "var(--dm-space-5)" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(12, 1fr)",
+              gap: "var(--dm-space-5)",
+            }}
+          >
             <div style={{ gridColumn: "span 8" }} className="dm-card">
               <div className="dm-section-header">
                 <h2 className="dm-section-title">
-                  <TrendingUp size={18} style={{ color: "var(--dm-primary)" }} /> Activity Trend Line
+                  <TrendingUp size={18} style={{ color: "var(--dm-primary)" }} />
+                  Activity Trend
                 </h2>
+                <span
+                  style={{
+                    fontSize: "var(--dm-text-xs)",
+                    color: "var(--dm-text-muted)",
+                  }}
+                >
+                  Activities logged per day
+                </span>
               </div>
               <ActivityTrend data={trendData} />
             </div>
@@ -176,7 +192,8 @@ function Analytics() {
             <div style={{ gridColumn: "span 4" }} className="dm-card">
               <div className="dm-section-header">
                 <h2 className="dm-section-title">
-                  <PieIcon size={18} style={{ color: "var(--dm-primary)" }} /> Category Breakdown
+                  <PieIcon size={18} style={{ color: "var(--dm-primary)" }} />
+                  Category Breakdown
                 </h2>
               </div>
               <CategoryChart data={categoryData} />

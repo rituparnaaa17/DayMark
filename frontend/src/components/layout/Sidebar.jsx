@@ -99,31 +99,16 @@ export function Sidebar({ mobileOpen, onMobileClose }) {
           >
             <Sparkles size={16} />
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-            <span
-              style={{
-                fontSize: "var(--dm-text-md)",
-                fontWeight: "var(--dm-weight-bold)",
-                color: "var(--dm-text-primary)",
-                letterSpacing: "-0.03em",
-              }}
-            >
-              DayMark
-            </span>
-            <span
-              style={{
-                fontSize: "9px",
-                fontWeight: "var(--dm-weight-bold)",
-                color: "var(--dm-primary)",
-                backgroundColor: "var(--dm-primary-soft)",
-                padding: "1px 5px",
-                borderRadius: "var(--dm-radius-full)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              2.0
-            </span>
-          </div>
+          <span
+            style={{
+              fontSize: "var(--dm-text-md)",
+              fontWeight: "var(--dm-weight-bold)",
+              color: "var(--dm-text-primary)",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            DayMark
+          </span>
         </div>
 
         {/* Main Nav */}

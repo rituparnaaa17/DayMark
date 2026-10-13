@@ -110,8 +110,6 @@ button, input, select, textarea {
 .dm-page-container {
   flex: 1;
   width: 100%;
-  max-width: var(--dm-max-width);
-  margin: 0 auto;
   padding: var(--dm-space-6) var(--dm-space-8);
 }
 

@@ -39,6 +39,7 @@ export function Modal({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflowY: "auto",
         padding: "var(--dm-space-4)",
         backgroundColor: "rgba(15, 18, 16, 0.55)",
         backdropFilter: "blur(6px)",
@@ -50,14 +51,13 @@ export function Modal({
         style={{
           width: "100%",
           maxWidth: maxWidth,
-          maxHeight: "90vh",
           backgroundColor: "var(--dm-surface)",
           borderRadius: "var(--dm-radius-lg)",
           border: "1px solid var(--dm-border)",
           boxShadow: "var(--dm-shadow-lg)",
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden",
+          margin: "auto",
           animation: "dmScaleUp 180ms ease forwards",
         }}
         className={className}
@@ -93,8 +93,6 @@ export function Modal({
         <div
           style={{
             padding: "var(--dm-space-5)",
-            overflowY: "auto",
-            flex: 1,
           }}
         >
           {children}
