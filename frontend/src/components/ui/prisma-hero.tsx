@@ -132,10 +132,10 @@ const PrismaHero = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
             onClick={() => navigate("/login")}
-            className="group inline-flex items-center gap-4 rounded-full bg-[#E1E0CC] py-2.5 pl-7 pr-2.5 text-sm font-semibold text-black transition-all hover:bg-white hover:scale-105 sm:text-base cursor-pointer shadow-2xl"
+            className="group inline-flex items-center gap-3 rounded-full bg-[#E1E0CC] py-3 pl-6 pr-3 text-sm font-semibold text-black transition-all hover:bg-white hover:scale-105 sm:text-base cursor-pointer shadow-2xl"
           >
             <span>Explore DayMark</span>
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform group-hover:translate-x-1 sm:h-10 sm:w-10">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform group-hover:translate-x-1 sm:h-10 sm:w-10 flex-shrink-0">
               <ArrowRight className="h-4 w-4" style={{ color: "#E1E0CC" }} />
             </span>
           </motion.button>
